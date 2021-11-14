@@ -5,8 +5,8 @@ import model
 from tqdm import tqdm
 from hparams import *
 
-#model = model.model.to(DEVICE)
-model = torch.load(MODEL_PATH).to(DEVICE)
+model = model.model.to(DEVICE)
+#model = torch.load(MODEL_PATH).to(DEVICE)
 
 train_dataset=dataset.SpeechAndNoiseDataset('train', AUDIO_DIR, SAMPLE_RATE, N_SAMPLES, FRAME_OFFSET, DEVICE)
 val_dataset=dataset.SpeechAndNoiseDataset('val', AUDIO_DIR, SAMPLE_RATE, N_SAMPLES, FRAME_OFFSET, DEVICE)
@@ -27,7 +27,6 @@ for epoch in range(NUM_EPOCHS):
     model.train()
     epoch_progress = tqdm(total=len(train_loader), desc=f'Epoch {epoch}', leave=False)
     for data, target in train_loader:
-
         optimizer.zero_grad()
         data = data.to(DEVICE)
         target = target.to(DEVICE)

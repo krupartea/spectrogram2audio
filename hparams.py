@@ -4,8 +4,8 @@ import os
 AUDIO_DIR = r"D:\It-Jim\small_speech_and_noise_dataset"
 SAMPLE_RATE = 16000
 
-SPECTROGRAM_N_FREQS = 256
-SPECTROGRAM_N_TIMESTAMPS = 256
+SPECTROGRAM_N_FREQS = 128
+SPECTROGRAM_N_TIMESTAMPS = 128
 N_FFT = SPECTROGRAM_N_FREQS * 2 - 2
 N_SAMPLES = N_FFT*SPECTROGRAM_N_TIMESTAMPS//2 - N_FFT//2
 
@@ -24,6 +24,6 @@ else:
 
 
 SPECTROGRAM_PARAMS = {
-    'n_fft': 510,
+    'n_fft': N_FFT,
     #'hop_length': 168
 }
