@@ -43,6 +43,7 @@ def make_flat_conv_transpose_layer(in_channels, out_channels):
         nn.ReLU(),
     )
 
+
 class Autoencoder(nn.Module):
     def __init__(self):
         super(Autoencoder, self).__init__()
@@ -58,6 +59,21 @@ class Autoencoder(nn.Module):
         self.flat_conv2 = make_flat_conv_layer(SPECTROGRAM_N_FREQS // 8, SPECTROGRAM_N_FREQS // 16)
         self.flat_conv3 = make_flat_conv_layer(SPECTROGRAM_N_FREQS // 16, SPECTROGRAM_N_FREQS // 16)
         self.flat_conv4 = make_flat_conv_layer(SPECTROGRAM_N_FREQS // 16, SPECTROGRAM_N_FREQS // 16)
+
+        # linear torch.Size([1, 8, 4])
+        
+        self.fc1 = nn.Linear(4 * SPECTROGRAM_N_FREQS // 16, 32)
+        self.fc2 = nn.Linear(32, 16)
+        self.fc3 = nn.Linear(16, 16)
+        self.fc4 = nn.Linear(16, 8)
+        self.fc5 = nn.Linear(8, 4)
+        self.fc6 = nn.Linear(4, 2)
+        self.fc7 = nn.Linear(2, 4)
+        self.fc8 = nn.Linear(4, 8)
+        self.fc9 = nn.Linear(8, 16)
+        self.fc10 = nn.Linear(16, 16)
+        self.fc11 = nn.Linear(16, 32)
+        self.fc12 = nn.Linear(32, 4 * SPECTROGRAM_N_FREQS // 16)
 
         # 1d deconv
         self.flat_deconv1 = make_flat_conv_transpose_layer(SPECTROGRAM_N_FREQS // 16, SPECTROGRAM_N_FREQS // 16)
@@ -92,6 +108,25 @@ class Autoencoder(nn.Module):
         x = self.flat_conv3(x)
         x = self.flat_conv4(x)
 
+        #linear
+        
+        channels = x.shape[1]
+        size = x.shape[2]
+        x = x.flatten(start_dim=1)
+        x = self.fc1(x)
+        x = self.fc2(x)
+        x = self.fc3(x)
+        x = self.fc4(x)
+        x = self.fc5(x)
+        x = self.fc6(x)
+        x = self.fc7(x)
+        x = self.fc8(x)
+        x = self.fc9(x)
+        x = self.fc10(x)
+        x = self.fc11(x)
+        x = self.fc12(x)
+        x = x.reshape(-1, channels, size)
+
         # flat deconv
         x = self.flat_deconv1(x)
         x = self.flat_deconv2(x)
@@ -115,4 +150,4 @@ class Autoencoder(nn.Module):
         return x
 
 model = Autoencoder().to(DEVICE)
-#print(model(torch.rand(1, 1, SPECTROGRAM_N_FREQS, SPECTROGRAM_N_FREQS, device=DEVICE)).shape)
+#print(model(torch.rand(10, 1, SPECTROGRAM_N_FREQS, SPECTROGRAM_N_FREQS, device=DEVICE)).shape)
