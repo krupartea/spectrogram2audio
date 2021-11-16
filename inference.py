@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from denoise import denoise
 import os
 
-dataset = dataset.SpeechAndNoiseDataset('train', AUDIO_DIR, SAMPLE_RATE, N_SAMPLES, FRAME_OFFSET, DEVICE, return_orig=True)
+dataset = dataset.SpeechAndNoiseDataset('test', AUDIO_DIR, SAMPLE_RATE, N_SAMPLES, FRAME_OFFSET, DEVICE, return_orig=True)
 
 
 noisy, clean = dataset[0]
@@ -48,5 +48,3 @@ fig.suptitle('Spectrograms')
 fig.tight_layout()
 
 fig.savefig(os.path.join(INFERENCE_DIR, 'spectrograms.jpg'), format='jpg')
-
-#hihi_ill

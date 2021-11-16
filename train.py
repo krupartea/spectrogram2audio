@@ -1,11 +1,11 @@
 import torch
 import dataset
 from torch.utils.data import DataLoader
-import model
+import VAE
 from tqdm import tqdm
 from hparams import *
 
-model = model.model.to(DEVICE)
+model = VAE.model.to(DEVICE)
 #model = torch.load(MODEL_PATH).to(DEVICE)
 
 train_dataset=dataset.SpeechAndNoiseDataset('train', AUDIO_DIR, SAMPLE_RATE, N_SAMPLES, FRAME_OFFSET, DEVICE)
