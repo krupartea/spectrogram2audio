@@ -14,12 +14,23 @@ val_dataset=dataset.SpeechAndNoiseDataset('val', AUDIO_DIR, SAMPLE_RATE, N_SAMPL
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE)
 val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE)
 
-optimizer = torch.optim.SGD(model.parameters(), lr=LEARNING_RATE)
+
+def my_loss(output, target, mu, log_variance):
+    reconstruction_loss = torch.mean((output - target)**2)
+    kl_loss = -0.5 * torch.sum(1 + log_variance - torch.square(mu) -\
+        torch.exp(log_variance))
+    return reconstruction_loss + 0.001*kl_loss
+
+
+optimizer = torch.optim.SGD(model.parameters(), lr=LEARNING_RATE, momentum=0.9)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer)
-loss_fn = torch.nn.MSELoss()
+loss_fn = my_loss
 
 total_progress = tqdm(total=NUM_EPOCHS, desc='Total progress')
 epoch_losses = []
+
+
+
 
 
 for epoch in range(NUM_EPOCHS):
@@ -30,8 +41,8 @@ for epoch in range(NUM_EPOCHS):
         optimizer.zero_grad()
         data = data.to(DEVICE)
         target = target.to(DEVICE)
-        output = model(target)
-        loss = loss_fn(output, target)
+        output, mu, log_variance = model(target)
+        loss = loss_fn(output, target, mu, log_variance)
         loss.backward()
         optimizer.step()
         epoch_progress.update()
@@ -44,8 +55,8 @@ for epoch in range(NUM_EPOCHS):
         for data, target in val_loader:
             data = data.to(DEVICE)
             target = target.to(DEVICE)
-            output = model(target)
-            loss = loss_fn(output, target)
+            output, mu, log_variance = model(target)
+            loss = loss_fn(output, target, mu, log_variance)
             val_losses.append(loss.item())
             val_progress.update()
         val_progress.close()    
