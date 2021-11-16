@@ -3,7 +3,6 @@ import torchaudio
 from hparams import DEVICE, SPECTROGRAM_PARAMS, MODEL_PATH
 model = torch.load(MODEL_PATH).to(DEVICE)
 
-
 def to_complex(mag, phase):
     return mag * torch.e**(1j*phase)
 
