@@ -17,7 +17,8 @@ class SpeechAndNoiseDataset(Dataset):
                  num_samples,
                  frame_offset,
                  device,
-                 return_orig=False):
+                 return_orig=False,
+                 normalize=False):
         
         self.phase = phase
         self.audio_dir = audio_dir
@@ -28,6 +29,7 @@ class SpeechAndNoiseDataset(Dataset):
         self.frame_offset = frame_offset
         self.clean_filenames = self._get_filenames('clean_', self.phase) # todo: calling every time is redundand
         self.noise_filenames = self._get_filenames('noise_', self.phase)
+        self.normalize = normalize
 
     def __len__(self):
         return len(self.clean_filenames)
@@ -53,6 +55,9 @@ class SpeechAndNoiseDataset(Dataset):
             return noisy_signal, clean_signal
         clean_spectrogram = self._make_spectrogram(clean_signal) # target
         noisy_spectrogram = self._make_spectrogram(noisy_signal) # data
+        if self.normalize:
+            clean_spectrogram = self._normalize(clean_spectrogram)
+            noisy_spectrogram = self._normalize(noisy_spectrogram)
         return noisy_spectrogram, clean_spectrogram
 
     # TODO: OCP violation. Pull transforamiton (spectrogram) creation out of dataset class
@@ -99,9 +104,14 @@ class SpeechAndNoiseDataset(Dataset):
         return path
     
     def _mix_clean_with_noise(self, clean, noise):
-        mixed = clean + noise
+        mixed = clean + noise*2.3
         # TODO: test if spectrogram of a signal > 1 is equal to normalized signal spectrogram
 #         max_amplitude = max([abs(max(mixed)), abs(min(mixed))])
 #         if max_amplitude > 1:
 #             mixed = mixed / max_amplitude
         return mixed
+    
+    def _normalize(self, signal):
+        return signal / 20
+
+    
