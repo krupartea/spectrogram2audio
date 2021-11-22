@@ -24,14 +24,14 @@ epoch_losses = []
 
 
 def get_mel_weights(size):
-    freqs = torch.arange(size).flip(0)
+    freqs = torch.arange(size)#.flip(0)
     weights = 2595 * torch.log10(1 + freqs/700)
     weights = weights / weights.max()
     return weights.unsqueeze(-1)
 
 weight = get_mel_weights(SPECTROGRAM_N_FREQS).to(DEVICE)
 weight_ones = torch.ones_like(weight)
-weight = weight_ones
+# weight = weight_ones
 
 def weighted_mse_loss(output, target, weight):
     MSE = (output - target) ** 2

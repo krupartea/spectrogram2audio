@@ -36,4 +36,4 @@ class UNet(nn.Module):
 
 
 model = UNet(1, 1).to('cuda')
-print(model(torch.rand(1, 1, 128, 128, device='cuda')).shape)
+# print(model(torch.rand(1, 1, 128, 128, device='cuda')).shape)
